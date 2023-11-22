@@ -98,15 +98,15 @@ namespace Katakana
             }
         }
 
-        public void BackwordPropagationPhase()
+        public void BackwordPropagationPhase() //Faza propagacji wstecz
         {
-            for (int i=0; i < FTwo.Length; i++)
+            for (int i=0; i < FTwo.Length; i++) //Obliczanie pochodnych i delty dla warstwy wyjsciowej
             {
                 FTwo[i] = UThree[i]*(1 - UThree[i]);
                 DTwo[i] = (C[i,i]- UThree[i]) * FTwo[i];
             }
 
-            for (int i=0; i < FOne.Length; i++)
+            for (int i=0; i < FOne.Length; i++) //Obliczanie pochodnych i delty dla warstwy wejściowej
             {
                 FOne[i] = UThree[i] * (1 - UThree[i]);
                 var sum = 0f;
@@ -118,9 +118,9 @@ namespace Katakana
             }
         }
 
-        public void UpdateWeightValues()
+        public void UpdateWeightValues() //Aktualizowanie wag
         {
-            for (int i=0;  i < WTwo.GetLength(0); i++)
+            for (int i=0;  i < WTwo.GetLength(0); i++) //Aktualizowanie dla warstwu wyjściowej
             {
                 for (int j=0; j < DTwo.GetLength(1); j++)
                 {
@@ -128,11 +128,11 @@ namespace Katakana
                 }
             }
 
-            for (int i=0;i < WOne.GetLength(0);i++)
+            for (int i=0;i < WOne.GetLength(0);i++) //Aktualizowanie dla warstwy wejściowej
             {
-                for (int j=0;j < DOne.GetLength(1);j++)
+                for (int j=0; j < DOne.GetLength(1); j++)
                 {
-                    WOne[i, j] = WOne[i, j] + Ro * DOne[i] * UTwo[j];
+                    WOne[i, j+1] = WOne[i, j+1] + Ro * DOne[i] * UTwo[j];
                 }
             }
         }
