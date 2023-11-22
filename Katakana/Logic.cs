@@ -132,7 +132,7 @@ namespace Katakana
             {
                 for (int j=0;j < DOne.GetLength(1);j++)
                 {
-                    WOne[i, j] = WOne[i, j] + Ro * DOne[i] * UThree[j];
+                    WOne[i, j] = WOne[i, j] + Ro * DOne[i] * UTwo[j];
                 }
             }
         }
