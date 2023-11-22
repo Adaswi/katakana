@@ -15,7 +15,15 @@ namespace Katakana
         private float[] SOne = new float[55];
         private float[] STwo = new float[46];
 
+        private float[] FOne = new float[55];
+        private float[] FTwo = new float[46];
+
+        private float[] DOne = new float[55]; 
+        private float[] DTwo = new float[46];
+
         private int[,] C = new int[46, 46];
+
+        private float Ro = 0.2f;
 
 
         public void WriteToRow(int signNr, string bits) //Funkcja do wpisywania ciągu zaków mapy bitowej(bits) dla konkretnego znaku(signNr) do tabeli UOne
@@ -87,6 +95,45 @@ namespace Katakana
                 }
                 STwo[m] = sum;
                 UThree[m] = (float)(1 / (1 + Math.Exp(-STwo[m])));
+            }
+        }
+
+        public void BackwordPropagationPhase()
+        {
+            for (int i=0; i < FTwo.Length; i++)
+            {
+                FTwo[i] = UThree[i]*(1 - UThree[i]);
+                DTwo[i] = (C[i,i]- UThree[i]) * FTwo[i];
+            }
+
+            for (int i=0; i < FOne.Length; i++)
+            {
+                FOne[i] = UThree[i] * (1 - UThree[i]);
+                var sum = 0f;
+                for (int j = 0; j < DTwo.Length; j++)
+                {
+                    sum = sum + DTwo[j] * WTwo[j,i];
+                }
+                DOne[i] = sum * FOne[i];
+            }
+        }
+
+        public void UpdateWeightValues()
+        {
+            for (int i=0;  i < WTwo.GetLength(0); i++)
+            {
+                for (int j=0; j < DTwo.GetLength(1); j++)
+                {
+                    WTwo[i, j] = WTwo[i, j] + Ro * DTwo[i] * UThree[j];
+                }
+            }
+
+            for (int i=0;i < WOne.GetLength(0);i++)
+            {
+                for (int j=0;j < DOne.GetLength(1);j++)
+                {
+                    WOne[i, j] = WOne[i, j] + Ro * DOne[i] * UThree[j];
+                }
             }
         }
     }
