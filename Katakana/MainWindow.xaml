@@ -30,5 +30,6 @@
             </Grid.RowDefinitions>
         </Grid>
         <TextBox x:Name="textbox" HorizontalAlignment="Left" Margin="610,0,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="180" Height="414"/>
+        <Button x:Name="scan" Content="Button" HorizontalAlignment="Left" Margin="455,304,0,0" VerticalAlignment="Top" Width="90" Height="30" Click="scan_Click"/>
     </Grid>
 </Window>

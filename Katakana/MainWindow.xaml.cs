@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Katakana
 {
@@ -64,21 +67,60 @@ namespace Katakana
                 else
                     clickedRectangle.Fill = Brushes.Black;
             }
-            RetrieveRectangleColors(); // for testing only
+            //RetrieveRectangleColors(); // for testing only
         }
 
-        private void RetrieveRectangleColors() // for testing
+        //private void RetrieveRectangleColors() // for testing
+        //{
+        //    String clors ="";
+        //    foreach (var rectangle in rectangles)
+        //    {
+        //        // Retrieve information about the color of each rectangle
+        //        Color color = ((SolidColorBrush)rectangle.Fill).Color;
+        //        string colorInfo = $"Rectangle at Row {Grid.GetRow(rectangle)}, Column {Grid.GetColumn(rectangle)} has color: {color} \n";
+        //        clors += colorInfo;
+        //        // Use the color information as needed (print to console, store in a list, etc.)
+        //    }
+        //    textbox.Text = clors;
+        //}
+
+        private void scan_Click(object sender, RoutedEventArgs e)
         {
-            String clors ="";
+            string colors = "";
+            int n = 0;
             foreach (var rectangle in rectangles)
             {
                 // Retrieve information about the color of each rectangle
-                Color color = ((SolidColorBrush)rectangle.Fill).Color;
-                string colorInfo = $"Rectangle at Row {Grid.GetRow(rectangle)}, Column {Grid.GetColumn(rectangle)} has color: {color} \n";
-                clors += colorInfo;
+                //Color color = ((SolidColorBrush)rectangle.Fill).Color;
+                if (rectangle.Fill == Brushes.Black)
+                    colors += "1";
+                else
+                    colors += "0";
+                n++;
+                //string colorInfo = $"Rectangle at Row {Grid.GetRow(rectangle)}, Column {Grid.GetColumn(rectangle)} has color: {color} \n";
+                //clors += colorInfo;
                 // Use the color information as needed (print to console, store in a list, etc.)
+                if(n==8)
+                {
+                    colors += "\n";
+                    n = 0;
+                }
             }
-            textbox.Text = clors;
+
+            //Added only temporarily ik it looks like sh... sorry -_-
+            colors += "\n";
+            string location = "D:\\TestFileSave\\Test.txt";
+
+            try
+            {
+                File.AppendAllText(location, colors);
+            }
+            catch (Exception ex)
+            {
+                textbox.Text = $"An error occurred: {ex.Message}";
+            }
+
+            textbox.Text = colors;
         }
     }
 }
