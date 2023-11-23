@@ -5,25 +5,25 @@ namespace Katakana
 {
     public class Logic
     {
-        private int[,] UOne = new int[65, 46];
-        private float[] UTwo = new float[55];
-        private float[] UThree = new float[46];
+        private int[,] UOne { get; set; } = new int[65, 46];
+        private float[] UTwo { get; set; } = new float[55];
+        private float[] UThree { get; set; } = new float[46];
 
-        private float[,] WOne = new float[55, 65];
-        private float[,] WTwo = new float[46, 55];
+        private float[,] WOne { get; set; } = new float[55, 65];
+        private float[,] WTwo { get; set; } = new float[46, 55];
 
-        private float[] SOne = new float[55];
-        private float[] STwo = new float[46];
+        private float[] SOne { get; set; } = new float[55];
+        private float[] STwo { get; set; } = new float[46];
 
-        private float[] FOne = new float[55];
-        private float[] FTwo = new float[46];
+        private float[] FOne { get; set; } = new float[55];
+        private float[] FTwo { get; set; } = new float[46];
 
-        private float[] DOne = new float[55]; 
-        private float[] DTwo = new float[46];
+        private float[] DOne { get; set; } = new float[55]; 
+        private float[] DTwo { get; set; } = new float[46];
 
-        private int[,] C = new int[46, 46];
+        private int[,] C { get; set; } = new int[46, 46];
 
-        private float Ro = 0.2f;
+        private float Ro { get; set; } = 0.2f;
 
 
         public void WriteToRow(int signNr, string bits) //Funkcja do wpisywania ciągu zaków mapy bitowej(bits) dla konkretnego znaku(signNr) do tabeli UOne
@@ -52,7 +52,7 @@ namespace Katakana
             {
                 for (int j = 0; j < WOne.GetLength(1); j++)
                 {
-                    WOne[i,j] = NextFloat(0, 0.5f);
+                    WOne[i,j] = NextFloat(-0.5f, 0.5f);
                 }
             }
 
@@ -60,7 +60,7 @@ namespace Katakana
             {
                 for (int j = 0; j < WTwo.GetLength(1); j++)
                 {
-                    WTwo[i, j] = NextFloat(0, 0.5f);
+                    WTwo[i, j] = NextFloat(-0.5f, 0.5f);
                 }
             }
         }
@@ -73,7 +73,8 @@ namespace Katakana
 
         public void ForwardPropagationPhase() //Faza wstępnej propagacji
         {
-            int r = (int)Math.Floor(NextFloat(0, 47-float.MinValue)); //Losowe generowanie wektora trenującego
+            Random rng = new Random();
+            int r = rng.Next(0,46); //Losowe generowanie wektora trenującego
 
             for(int i = 0; i<SOne.Length; i++) //Obliczanie S i U dla warstwy pośredniej
             {
@@ -106,9 +107,9 @@ namespace Katakana
                 DTwo[i] = (C[i,i]- UThree[i]) * FTwo[i];
             }
 
-            for (int i=0; i < FOne.Length; i++) //Obliczanie pochodnych i delty dla warstwy wejściowej
+            for (int i=0; i < FOne.Length; i++) //Obliczanie pochodnych i delty dla warstwy pośredniej
             {
-                FOne[i] = UThree[i] * (1 - UThree[i]);
+                FOne[i] = UTwo[i] * (1 - UTwo[i]);
                 var sum = 0f;
                 for (int j = 0; j < DTwo.Length; j++)
                 {
@@ -122,17 +123,17 @@ namespace Katakana
         {
             for (int i=0;  i < WTwo.GetLength(0); i++) //Aktualizowanie dla warstwu wyjściowej
             {
-                for (int j=0; j < DTwo.GetLength(1); j++)
+                for (int j=0; j < WTwo.GetLength(1); j++)
                 {
-                    WTwo[i, j] = WTwo[i, j] + Ro * DTwo[i] * UThree[j];
+                    WTwo[i, j] = WTwo[i, j] + Ro * DTwo[i] * UThree[i];
                 }
             }
 
             for (int i=0;i < WOne.GetLength(0);i++) //Aktualizowanie dla warstwy wejściowej
             {
-                for (int j=0; j < DOne.GetLength(1); j++)
+                for (int j=0; j < WOne.GetLength(1); j++)
                 {
-                    WOne[i, j+1] = WOne[i, j+1] + Ro * DOne[i] * UTwo[j];
+                    WOne[i, j] = WOne[i, j] + Ro * DOne[i] * UTwo[i];
                 }
             }
         }
