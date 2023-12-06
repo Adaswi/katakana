@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Katakana
 {
@@ -24,6 +25,8 @@ namespace Katakana
         private int[,] C { get; set; } = new int[46, 46];
 
         private float Ro { get; set; } = 0.2f;
+
+        private int R { get; set; };
 
 
         public void WriteToRow(int signNr, string bits) //Funkcja do wpisywania ciągu zaków mapy bitowej(bits) dla konkretnego znaku(signNr) do tabeli UOne
@@ -71,17 +74,23 @@ namespace Katakana
             return (float)val;
         }
 
-        public void ForwardPropagationPhase() //Faza wstępnej propagacji
+        public float SetRandomR()
         {
             Random rng = new Random();
-            int r = rng.Next(0,46); //Losowe generowanie wektora trenującego
+            var r = rng.Next(0, 46);
+            this.R = r; //Losowe generowanie wektora trenującego
+            return r;
+        }
+
+        public void ForwardPropagationPhase() //Faza wstępnej propagacji
+        {
 
             for(int i = 0; i<SOne.Length; i++) //Obliczanie S i U dla warstwy pośredniej
             {
                 var sum = 0f;
                 for(int j = 0; j<WOne.GetLength(1); j++)
                 {
-                    sum = sum + WOne[i, j] * UOne[j,r];
+                    sum = sum + WOne[i, j] * UOne[j,this.R];
                 }
                 SOne[i] = sum;
                 UTwo[i] = (float)(1 / (1 + Math.Exp(-SOne[i])));
@@ -89,7 +98,7 @@ namespace Katakana
 
             for (int m = 0; m < STwo.Length; m++) //Obliczanie S i U dla warstwy wyjściowej
             {
-                var sum = WTwo[m, 0] * UOne[m,r];
+                var sum = WTwo[m, 0] * UOne[m,this.R];
                 for (int n = 1; n < WTwo.GetLength(1); n++)
                 {
                     sum = sum + WTwo[m, n] * UTwo[n-1];
@@ -104,7 +113,7 @@ namespace Katakana
             for (int i=0; i < FTwo.Length; i++) //Obliczanie pochodnych i delty dla warstwy wyjsciowej
             {
                 FTwo[i] = UThree[i]*(1 - UThree[i]);
-                DTwo[i] = (C[i,i]- UThree[i]) * FTwo[i];
+                DTwo[i] = (C[this.R,i]- UThree[i]) * FTwo[i];
             }
 
             for (int i=0; i < FOne.Length; i++) //Obliczanie pochodnych i delty dla warstwy pośredniej
