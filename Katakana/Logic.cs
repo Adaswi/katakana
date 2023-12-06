@@ -1,32 +1,30 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace Katakana
 {
     public class Logic
     {
-        private int[,] UOne { get; set; } = new int[65, 46];
-        private float[] UTwo { get; set; } = new float[55];
-        private float[] UThree { get; set; } = new float[46];
+        public int[,] UOne { get; set; } = new int[65, 46];
+        public float[] UTwo { get; set; } = new float[55];
+        public float[] UThree { get; set; } = new float[46];
 
-        private float[,] WOne { get; set; } = new float[55, 65];
-        private float[,] WTwo { get; set; } = new float[46, 55];
+        public float[,] WOne { get; set; } = new float[55, 65];
+        public float[,] WTwo { get; set; } = new float[46, 55];
 
-        private float[] SOne { get; set; } = new float[55];
-        private float[] STwo { get; set; } = new float[46];
+        public float[] SOne { get; set; } = new float[55];
+        public float[] STwo { get; set; } = new float[46];
 
-        private float[] FOne { get; set; } = new float[55];
-        private float[] FTwo { get; set; } = new float[46];
+        public float[] FOne { get; set; } = new float[55];
+        public float[] FTwo { get; set; } = new float[46];
 
-        private float[] DOne { get; set; } = new float[55]; 
-        private float[] DTwo { get; set; } = new float[46];
+        public float[] DOne { get; set; } = new float[55];
+        public float[] DTwo { get; set; } = new float[46];
 
-        private int[,] C { get; set; } = new int[46, 46];
+        public int[,] C { get; set; } = new int[46, 46];
 
-        private float Ro { get; set; } = 0.2f;
+        public float Ro { get; set; } = 0.2f;
 
-        private int R { get; set; };
+        public int R { get; set; }
 
 
         public void WriteToRow(int signNr, string bits) //Funkcja do wpisywania ciągu zaków mapy bitowej(bits) dla konkretnego znaku(signNr) do tabeli UOne
