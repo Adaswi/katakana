@@ -35,8 +35,8 @@ namespace Katakana
                     UOne[i, signNr] = 1; //Wpisanie jedynek dla U0
                 else 
                     UOne[i, signNr] = (int)bits[i-1] - '0'; //Wpisanie danego elementu ciągu znaków na odpowiednią pozycję w tabeli
-                C[signNr, signNr] = 1; //Zaznaczenie bitu odpowiadającego wynikowi
             }
+            C[signNr, signNr] = 1; //Zaznaczenie bitu odpowiadającego wynikowi
         }
 
         public void WriteToColumn(string[] strings) //Funkcja do wpisywania całej tablicy ciągu znaków mapy bitowej(strings) dla wszystkich znaków do tabeli UOne
