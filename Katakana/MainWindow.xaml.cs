@@ -1,21 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Katakana
 {
@@ -75,7 +65,7 @@ namespace Katakana
             string signString = "";
             int row = 0;
             int col = 0;
-            int[,] sign = new int[8,8];
+            int[,] sign = new int[8, 8];
             int control = 0;
             foreach (var rectangle in rectangles) //foreach writes selected boxes to an int[,] data holder
             {
@@ -89,28 +79,28 @@ namespace Katakana
                     sign[row, col] = 0;
                 }
                 col++;
-                if(col==8)
+                if (col == 8)
                 {
                     col = 0;
                     row++;
                 }
             }
 
-            while (true && control !=0) // this while is responsible for shifting the whole bitmap to the bottom left corner
+            while (true && control != 0) // this while is responsible for shifting the whole bitmap to the bottom left corner
             {
                 int checkCol = 0;
-                for(int i = 0; i< 8; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     checkCol += sign[i, 0];
                 }
                 if (checkCol == 0)
                 {
-                    for(int r = 0; r<8; r++)
+                    for (int r = 0; r < 8; r++)
                     {
-                        for(int c =1;c<8; c++)
-                            sign[r,c-1] = sign[r,c];
+                        for (int c = 1; c < 8; c++)
+                            sign[r, c - 1] = sign[r, c];
                     }
-                    for(int r=0; r<8; r++)
+                    for (int r = 0; r < 8; r++)
                         sign[r, 7] = 0;
                 }
 
@@ -125,31 +115,37 @@ namespace Katakana
                     for (int r = 6; r >= 0; r--)
                     {
                         for (int c = 0; c < 8; c++)
-                            sign[r+1, c] = sign[r, c];
+                            sign[r + 1, c] = sign[r, c];
                     }
                     for (int c = 0; c < 8; c++)
                         sign[0, c] = 0;
                 }
 
-                if (checkCol !=0 && checkRow !=0)
+                if (checkCol != 0 && checkRow != 0)
                     break;
             }
 
-            //Added only temporarily ik it looks like sh... sorry -_-
-
-            for (int r = 0; r <8; r++)
-            {
-                for (int c = 0; c < 8; c++)
-                    signString += sign[r, c];
-
-                signString += "\n";
-            }
+            //Added only temporarily ik it looks like sh... sorry -_-   
 
             string location = "D:\\TestFileSave\\Test.txt";
 
+            List<string> znakiDoPliku = new List<string>(File.ReadAllLines(location));
+
+            for (int r = 0; r < 8; r++)
+            {
+                for (int c = 0; c < 8; c++)
+                {
+                    signString += sign[r, c];
+                }
+            }
+
+            znakiDoPliku.Add(signString);
+
+
+
             try
             {
-                File.AppendAllText(location, signString);
+                File.WriteAllLines(location, znakiDoPliku.ToArray());
             }
             catch (Exception ex)
             {
