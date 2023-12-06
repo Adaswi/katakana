@@ -67,60 +67,96 @@ namespace Katakana
                 else
                     clickedRectangle.Fill = Brushes.Black;
             }
-            //RetrieveRectangleColors(); // for testing only
         }
 
-        //private void RetrieveRectangleColors() // for testing
-        //{
-        //    String clors ="";
-        //    foreach (var rectangle in rectangles)
-        //    {
-        //        // Retrieve information about the color of each rectangle
-        //        Color color = ((SolidColorBrush)rectangle.Fill).Color;
-        //        string colorInfo = $"Rectangle at Row {Grid.GetRow(rectangle)}, Column {Grid.GetColumn(rectangle)} has color: {color} \n";
-        //        clors += colorInfo;
-        //        // Use the color information as needed (print to console, store in a list, etc.)
-        //    }
-        //    textbox.Text = clors;
-        //}
 
         private void scan_Click(object sender, RoutedEventArgs e)
         {
-            string colors = "";
-            int n = 0;
-            foreach (var rectangle in rectangles)
+            string signString = "";
+            int row = 0;
+            int col = 0;
+            int[,] sign = new int[8,8];
+            int control = 0;
+            foreach (var rectangle in rectangles) //foreach writes selected boxes to an int[,] data holder
             {
-                // Retrieve information about the color of each rectangle
-                //Color color = ((SolidColorBrush)rectangle.Fill).Color;
                 if (rectangle.Fill == Brushes.Black)
-                    colors += "1";
-                else
-                    colors += "0";
-                n++;
-                //string colorInfo = $"Rectangle at Row {Grid.GetRow(rectangle)}, Column {Grid.GetColumn(rectangle)} has color: {color} \n";
-                //clors += colorInfo;
-                // Use the color information as needed (print to console, store in a list, etc.)
-                if(n==8)
                 {
-                    colors += "\n";
-                    n = 0;
+                    sign[row, col] = 1;
+                    control++;
+                }
+                else
+                {
+                    sign[row, col] = 0;
+                }
+                col++;
+                if(col==8)
+                {
+                    col = 0;
+                    row++;
                 }
             }
 
+            while (true && control !=0) // this while is responsible for shifting the whole bitmap to the bottom left corner
+            {
+                int checkCol = 0;
+                for(int i = 0; i< 8; i++)
+                {
+                    checkCol += sign[i, 0];
+                }
+                if (checkCol == 0)
+                {
+                    for(int r = 0; r<8; r++)
+                    {
+                        for(int c =1;c<8; c++)
+                            sign[r,c-1] = sign[r,c];
+                    }
+                    for(int r=0; r<8; r++)
+                        sign[r, 7] = 0;
+                }
+
+
+                int checkRow = 0;
+                for (int i = 0; i < 8; i++)
+                {
+                    checkRow += sign[7, i];
+                }
+                if (checkRow == 0)
+                {
+                    for (int r = 6; r >= 0; r--)
+                    {
+                        for (int c = 0; c < 8; c++)
+                            sign[r+1, c] = sign[r, c];
+                    }
+                    for (int c = 0; c < 8; c++)
+                        sign[0, c] = 0;
+                }
+
+                if (checkCol !=0 && checkRow !=0)
+                    break;
+            }
+
             //Added only temporarily ik it looks like sh... sorry -_-
-            colors += "\n";
+
+            for (int r = 0; r <8; r++)
+            {
+                for (int c = 0; c < 8; c++)
+                    signString += sign[r, c];
+
+                signString += "\n";
+            }
+
             string location = "D:\\TestFileSave\\Test.txt";
 
             try
             {
-                File.AppendAllText(location, colors);
+                File.AppendAllText(location, signString);
             }
             catch (Exception ex)
             {
                 textbox.Text = $"An error occurred: {ex.Message}";
             }
 
-            textbox.Text = colors;
+            textbox.Text = signString;
         }
     }
 }
