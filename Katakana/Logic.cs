@@ -4,12 +4,12 @@ namespace Katakana
 {
     public class Logic
     {
-        public int[,] UOne { get; set; } = new int[65, 46];
+        public int[,] UOne { get; set; } = new int[46, 65];
         public float[] UTwo { get; set; } = new float[55];
         public float[] UThree { get; set; } = new float[46];
 
         public float[,] WOne { get; set; } = new float[55, 65];
-        public float[,] WTwo { get; set; } = new float[46, 55];
+        public float[,] WTwo { get; set; } = new float[46, 56];
 
         public float[] SOne { get; set; } = new float[55];
         public float[] STwo { get; set; } = new float[46];
@@ -32,16 +32,16 @@ namespace Katakana
             for (int i = 0; i < bits.Length+1; i++)
             {
                 if (i == 0) 
-                    UOne[i, signNr] = 1; //Wpisanie jedynek dla U0
+                    UOne[signNr, i] = 1; //Wpisanie jedynek dla U0
                 else 
-                    UOne[i, signNr] = (int)bits[i-1] - '0'; //Wpisanie danego elementu ciągu znaków na odpowiednią pozycję w tabeli
+                    UOne[signNr, i] = (int)bits[i-1] - '0'; //Wpisanie danego elementu ciągu znaków na odpowiednią pozycję w tabeli
             }
             C[signNr, signNr] = 1; //Zaznaczenie bitu odpowiadającego wynikowi
         }
 
         public void WriteToColumn(string[] strings) //Funkcja do wpisywania całej tablicy ciągu znaków mapy bitowej(strings) dla wszystkich znaków do tabeli UOne
         {
-            for (int i = 0; i<UOne.GetLength(1); i++)
+            for (int i = 0; i<UOne.GetLength(0); i++)
             {
                 this.WriteToRow(i, strings[i]);   
             }
@@ -88,7 +88,7 @@ namespace Katakana
                 var sum = 0f;
                 for(int j = 0; j<WOne.GetLength(1); j++)
                 {
-                    sum = sum + WOne[i, j] * UOne[j,this.R];
+                    sum = sum + WOne[i, j] * UOne[this.R,j];
                 }
                 SOne[i] = sum;
                 UTwo[i] = (float)(1 / (1 + Math.Exp(-SOne[i])));
@@ -96,7 +96,7 @@ namespace Katakana
 
             for (int m = 0; m < STwo.Length; m++) //Obliczanie S i U dla warstwy wyjściowej
             {
-                var sum = WTwo[m, 0] * UOne[m,this.R];
+                var sum = WTwo[m, 0] * UOne[this.R, m];
                 for (int n = 1; n < WTwo.GetLength(1); n++)
                 {
                     sum = sum + WTwo[m, n] * UTwo[n-1];
@@ -120,7 +120,7 @@ namespace Katakana
                 var sum = 0f;
                 for (int j = 0; j < DTwo.Length; j++)
                 {
-                    sum = sum + DTwo[j] * WTwo[j,i];
+                    sum = sum + DTwo[j] * WTwo[j,i+1];
                 }
                 DOne[i] = sum * FOne[i];
             }
@@ -130,17 +130,17 @@ namespace Katakana
         {
             for (int i=0;  i < WTwo.GetLength(0); i++) //Aktualizowanie dla warstwu wyjściowej
             {
-                for (int j=0; j < WTwo.GetLength(1); j++)
+                for (int j=1; j < WTwo.GetLength(1); j++)
                 {
-                    WTwo[i, j] = WTwo[i, j] + Ro * DTwo[i] * UThree[i];
+                    WTwo[i, j] = WTwo[i, j] + Ro * DTwo[i] * UTwo[j-1];
                 }
             }
 
             for (int i=0;i < WOne.GetLength(0);i++) //Aktualizowanie dla warstwy wejściowej
             {
-                for (int j=0; j < WOne.GetLength(1); j++)
+                for (int j=1; j < WOne.GetLength(1); j++)
                 {
-                    WOne[i, j] = WOne[i, j] + Ro * DOne[i] * UTwo[i];
+                    WOne[i, j] = WOne[i, j] + Ro * DOne[i] * UOne[this.R,j-1];
                 }
             }
         }
