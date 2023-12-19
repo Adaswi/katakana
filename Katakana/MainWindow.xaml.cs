@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,13 +17,9 @@ namespace Katakana
     public partial class MainWindow : Window
     {
         private List<Rectangle> rectangles = new List<Rectangle>();
-        public MainWindow()
-        {
-            InitializeComponent();
-            FillGridWithRectangles();
-            var logic = new Logic();
-
-            string[] strings = new string[46] { "0000000011111100000001000010100000100000001000000010000001000000",
+        private List<Rectangle> rectangles_display = new List<Rectangle>();
+        private Logic logic = new Logic();
+        private string[] signStrings = new string[46] { "0000000011111100000001000010100000100000001000000010000001000000",
 "0000000000000000000001000000100000010000001100001101000000010000",
 "0000000000010000111111001000010010000100000001000000100000110000",
 "0000000011111110000100000001000000010000000100000001000011111110",
@@ -67,27 +65,12 @@ namespace Katakana
 "0000000000000000111111001000010010000100000001000000100000110000",
 "0000000000000000111111000000010011111100000001000000100000110000",
 "0000000000000000100000000100010000000100000010000001000011100000" };
+        public MainWindow()
+        {
+            InitializeComponent();
+            FillGridWithRectangles();
+            FillDisplayGridWithRectangles();
 
-
-            logic.WriteToColumn(strings);
-
-            logic.GenerateWeightValues();
-            var iteracja = 0;
-            while(iteracja<10000)
-            {
-                iteracja += 1;
-
-                logic.SetRandomR();
-                logic.ForwardPropagationPhase();
-                logic.BackwordPropagationPhase();
-                logic.UpdateWeightValues();
-            }
-
-            logic.WriteToRow(0, "0000000000100000111110000010000000100000101010001010100000100000");
-            logic.R = 0;
-
-            logic.ForwardPropagationPhase();
-            var i = 1 + 1;
         }
         private void FillGridWithRectangles()
         {
@@ -114,6 +97,30 @@ namespace Katakana
             }
         }
 
+        private void FillDisplayGridWithRectangles()
+        {
+            for (int row = 0; row < PixelGrid_Display.RowDefinitions.Count; row++)
+            {
+                for (int column = 0; column < PixelGrid_Display.ColumnDefinitions.Count; column++)
+                {
+                    Rectangle rectangle = new Rectangle
+                    {
+                        Fill = Brushes.White, // You can set your desired color
+                        Stroke = Brushes.LightGray,
+                        StrokeThickness = 0.5,
+                        Name = $"Pixel{row}{column}"
+                    };
+
+                    Grid.SetRow(rectangle, row);
+                    Grid.SetColumn(rectangle, column);
+
+
+                    rectangles_display.Add(rectangle);
+                    PixelGrid_Display.Children.Add(rectangle);
+                }
+            }
+        }
+
         private void Rectangle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // Handle the click event here
@@ -128,7 +135,7 @@ namespace Katakana
         }
 
 
-        private void scan_Click(object sender, RoutedEventArgs e)
+        private async void scan_Click(object sender, RoutedEventArgs e)
         {
             string signString = "";
             int row = 0;
@@ -193,12 +200,6 @@ namespace Katakana
                     break;
             }
 
-            //Added only temporarily ik it looks like sh... sorry -_-   
-
-            string location = "D:\\TestFileSave\\Test.txt";
-
-            List<string> znakiDoPliku = new List<string>(File.ReadAllLines(location));
-
             for (int r = 0; r < 8; r++)
             {
                 for (int c = 0; c < 8; c++)
@@ -207,20 +208,107 @@ namespace Katakana
                 }
             }
 
-            znakiDoPliku.Add(signString);
+            logic.WriteToRow(0, signString);
+            logic.R = 0;
 
+            logic.ForwardPropagationPhase();
 
-
-            try
+            string outputstring = "";
+            int highestProb = 0;
+            for(int i =0; i< logic.UThree.Length; i++)
             {
-                File.WriteAllLines(location, znakiDoPliku.ToArray());
-            }
-            catch (Exception ex)
-            {
-                textbox.Text = $"An error occurred: {ex.Message}";
+                outputstring += logic.UThree[i] +"\n";
+                if (logic.UThree[highestProb] < logic.UThree[i])
+                    highestProb = i;
             }
 
-            textbox.Text = signString; ////comment
+            textbox.Text = outputstring; ////comment
+            foreach (var rectangle in rectangles_display) //foreach writes selected boxes to an int[,] data holder
+            {
+                rectangle.Fill = Brushes.White;
+            }
+
+            int it = 0;
+            foreach (var rectangle in rectangles_display) //foreach writes selected boxes to an int[,] data holder
+            {
+                if (signStrings[highestProb][it] == '1')
+                {
+                    rectangle.Fill = Brushes.Black;
+                }
+                it++;
+            }
+        }
+
+        private void Train_Click(object sender, RoutedEventArgs e)
+        {
+            logic.Ro = float.Parse(Ro.Text);
+
+            string[] strings = new string[46] { "0000000011111100000001000010100000100000001000000010000001000000",
+"0000000000000000000001000000100000010000001100001101000000010000",
+"0000000000010000111111001000010010000100000001000000100000110000",
+"0000000011111110000100000001000000010000000100000001000011111110",
+"0000000000010000000100001111110000110000010100001001000000110000",
+"0000000000100000111111000010010000100100001001000100010010011000",
+"0000000000100000000110000110000000011100111000000001000000010000",
+"0000000001000000011110000100100010001000000010000001000001100000",
+"0000000001000000010000000111110010010000100100000001000001100000",
+"0000000000000000111110000000100000001000000010000000100011111000",
+"0000000001000100010001001111111001000100010001000000010000111000",
+"0000000000000000001000001001010001000100000010000001000011100000",
+"0000000000000000111100000001000000100000001100000100100010001000",
+"0000000001000000010111101110001001000010010001000100000000111110",
+"0000000000000000100010000100100001001000000010000001000001100000",
+"0000000001000000011110000100100010101000000100000001000001100000",
+"0000000000001000011100000001000011111100000100000001000001100000",
+"0000000000000000000000000010010010010100010001000000100000110000",
+"0000000000000000011110000000000011111100000100000001000001100000",
+"0000000000000000100000001000000011100000100100001000000010000000",
+"0000000000000000000100001111100000010000000100000010000011000000",
+"0000000000000000000000000110000000000000000000000000000011110000",
+"0000000000000000111111000000010000110100000010000001010001100010",
+"0000000000100000111110000001000000101000111000000010000000100000",
+"0000000000000000000010000000100000010000000100000010000011000000",
+"0000000000000000010100000100100001001000010001001000010010000100",
+"0000000000000000100010001111000010000000100000001000000001111000",
+"0000000000000000111110000000100000001000000010000001000001100000",
+"0000000000000000000000000000000000100000010100001000100000000100",
+"0000000000100000111110000010000000100000101010001010100000100000",
+"0000000000000000111111000000010001000100001010000001000000010000",
+"0000000011000000001100001100000000110000000000001100000000110000",
+"0000000000010000000100000010000000100000001001000100110011110010",
+"0000000000001000000010000110100000010000001010000100100010000000",
+"0000000000000000111110000100000011111000010000000100000000111000",
+"0000000001000000001011100011001011100010000101000001000000010000",
+"0000000000000000011100000001000000010000000100000001000011111100",
+"0000000000000000111110000000100011111000000010000000100011111000",
+"0111000000000000111110000000100000001000000010000001000001100000",
+"0000000000000000100100001001000010010000000100000010000011000000",
+"0000000000000000000100000101000001010010010100101001010010011000",
+"0000000000000000100000001000000010010000100100001010000011000000",
+"0000000000000000111110001000100010001000100010001111100010001000",
+"0000000000000000111111001000010010000100000001000000100000110000",
+"0000000000000000111111000000010011111100000001000000100000110000",
+"0000000000000000100000000100010000000100000010000001000011100000" };
+
+
+            logic.WriteToColumn(strings);
+
+            logic.GenerateWeightValues();
+            var iteracja = 0;
+            while (iteracja < Int32.Parse(iterations.Text))
+            {
+                iteracja += 1;
+
+                logic.SetRandomR();
+                logic.ForwardPropagationPhase();
+                logic.BackwordPropagationPhase();
+                logic.UpdateWeightValues();
+            }
+        }
+
+        private void iterations_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }

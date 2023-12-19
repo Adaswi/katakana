@@ -80,7 +80,7 @@ namespace Katakana
             return r;
         }
 
-        public void ForwardPropagationPhase() //Faza wstępnej propagacji
+        public void ForwardPropagationPhase() //Faza wstępnej propagacji /// Dodać albo zmienić forward dla sprawdania stringa na działającym programie 
         {
 
             for(int i = 0; i<SOne.Length; i++) //Obliczanie S i U dla warstwy pośredniej
