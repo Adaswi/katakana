@@ -37,7 +37,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
         </Grid>
-        <TextBox x:Name="textbox" HorizontalAlignment="Left" Margin="1285,12,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="312" Height="195"/>
+        <TextBox x:Name="textbox" HorizontalAlignment="Left" Margin="1271,77,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="312" Height="51" TextAlignment="Center" FontFamily="Agency FB" FontSize="36" IsUndoEnabled="False"/>
         <Button x:Name="scan" Content="Sprawdź!" HorizontalAlignment="Left" Margin="1025,665,0,0" VerticalAlignment="Top" Width="90" Height="30" Click="scan_Click"/>
         <Label Content="Liczba iteracji" HorizontalAlignment="Left" Margin="916,740,0,0" VerticalAlignment="Top"/>
         <Label Content="Współczynnik Ro" HorizontalAlignment="Left" Margin="1030,741,0,0" VerticalAlignment="Top"/>
@@ -46,7 +46,7 @@
         <TextBox x:Name="Ro" HorizontalAlignment="Left" Margin="1018,774,0,0" TextWrapping="Wrap" Text="0.2" VerticalAlignment="Top" Width="120" TextChanged="Ro_TextChanged"/>
         <TextBox x:Name="Error" HorizontalAlignment="Left" Margin="1157,773,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
         <Button x:Name="Train" Content="Trenuj" HorizontalAlignment="Left" Margin="1028,818,0,0" VerticalAlignment="Top" Height="22" Width="74" Click="Train_Click"/>
-        <Grid x:Name="PixelGrid_Display" Margin="1300,237,7,264">
+        <Grid x:Name="PixelGrid_Display" Margin="1221,190,7,186">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
