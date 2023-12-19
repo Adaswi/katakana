@@ -87,6 +87,7 @@ namespace Katakana
                 logic.UpdateWeightValues();
             }
 
+            logic.WriteToRow(0, "0000000000100000111110000010000000100000101010001010100000100000");
             logic.R = 0;
 
             logic.ForwardPropagationPhase();
