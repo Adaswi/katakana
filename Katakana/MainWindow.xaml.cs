@@ -308,7 +308,26 @@ namespace Katakana
 
         private void iterations_TextChanged(object sender, TextChangedEventArgs e)
         {
+            try
+            {
+                Int32.Parse(iterations.Text);
+            }
+            catch
+            {
+                iterations.Text = "10000";
+            }
+        }
 
+        private void Ro_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                float.Parse(Ro.Text);
+            }
+            catch
+            {
+                Ro.Text = "0.2";
+            }
         }
     }
 }
