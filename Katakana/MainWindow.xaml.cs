@@ -225,10 +225,6 @@ namespace Katakana
             }
 
             textbox.Text = outputstring; ////comment
-            foreach (var rectangle in rectangles_display) //foreach writes selected boxes to an int[,] data holder
-            {
-                rectangle.Fill = Brushes.White;
-            }
 
             int it = 0;
             foreach (var rectangle in rectangles_display) //foreach writes selected boxes to an int[,] data holder
@@ -236,6 +232,10 @@ namespace Katakana
                 if (signStrings[highestProb][it] == '1')
                 {
                     rectangle.Fill = Brushes.Black;
+                }
+                else
+                {
+                    rectangle.Fill = Brushes.White;
                 }
                 it++;
             }
